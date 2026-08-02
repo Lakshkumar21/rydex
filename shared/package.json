@@ -1,7 +1,8 @@
 {
   "name": "shared",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "A microservices-based ride-sharing backend, built solo as a learning project to understand distributed systems patterns — service decomposition, geospatial search, event-driven communication, saga-based transaction handling, and real-time updates — using a Node.js/Express stack.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +12,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "jsonwebtoken": "^9.0.3",
     "winston": "^3.19.0"
   }
 }

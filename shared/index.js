@@ -1,6 +1,6 @@
 const { logger, createLogger } = require('./logger');
 const authMiddleware = require('./authMiddleware');
-const { AppError, NotFoundError, UnauthorizedError, ValidationError } = require('./errors');
+const { AppError, NotFoundError, UnauthorizedError, ValidationError } = require('./error');
 
 module.exports = {
     logger,
