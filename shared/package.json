@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "ioredis": "^6.0.0",
     "winston": "^3.19.0"
   }
 }
