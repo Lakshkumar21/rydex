@@ -1,9 +1,11 @@
 const express = require('express');
+const axios = require('axios');
 const Trip = require('../models/trip');
 const { assertValidTransition } = require('../stateMachine');
 const { publishRideCompleted } = require('../events/publish');
-const { NotFoundError } = require('shared');
+const { NotFoundError, createLogger } = require('shared');
 
+const logger = createLogger('trip-service');
 const router = express.Router();
 
 async function getTripOr404(id) {
@@ -50,9 +52,21 @@ router.post('/:id/complete', async (req, res, next) => {
     const trip = await getTripOr404(req.params.id);
     assertValidTransition(trip.status, 'completed');
 
-    const { fare } = req.body;
+    // fetch real surge multiplier, fall back to 1.0 if surge-service is unreachable
+    let surgeMultiplier = 1.0;
+    try {
+      const { data } = await axios.get(`${process.env.SURGE_SERVICE_URL}/pricing/surge`);
+      surgeMultiplier = data.multiplier;
+    } catch (err) {
+      logger.warn(`Could not fetch surge multiplier, defaulting to 1.0: ${err.message}`);
+    }
+
+    const { baseFare } = req.body;
+    const BASE_FARE = baseFare || 100;
+
     trip.status = 'completed';
-    trip.fare = fare || 100 * trip.surge_multiplier; // placeholder fare calc until surge-service is wired in
+    trip.surge_multiplier = surgeMultiplier;
+    trip.fare = BASE_FARE * surgeMultiplier;
 
     await trip.save();
     publishRideCompleted(trip);
